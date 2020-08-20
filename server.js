@@ -11,6 +11,8 @@ const app = express();
 // use the express-static middleware
 //app.use(express.static("public"));
 //access to server static files.
+// use the express-static middleware
+app.use(express.static("public"));
 app.use(serverStatic('public',{ 'search': ['search.html', 'search.htm'] }))
 
 class globalvars {

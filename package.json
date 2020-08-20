@@ -1,5 +1,5 @@
 {
-  "name": "heroku_test",
+  "name": "TestArea",
   "version": "1.0.0",
   "description": "Node JS test for IK",
   "main": "server.js",
