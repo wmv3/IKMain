@@ -1,0 +1,26 @@
+{
+  "name": "heroku_test",
+  "version": "1.0.0",
+  "description": "Node JS test for IK",
+  "main": "server.js",
+  "start": "node server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.0",
+    "serve-static": "^1.14.1"
+   },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmv3/Heroku_test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wmv3/Heroku_test/issues"
+  },
+  "homepage": "https://github.com/wmv3/Heroku_test#readme"
+}
