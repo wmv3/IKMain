@@ -1,6 +1,6 @@
 // create an express app
 const express = require("express")
-//const path = require('path')
+const path = require('path')
 const serverStatic = require('serve-static');
 const fetch = require('node-fetch');
 const { captureRejectionSymbol } = require("events");
