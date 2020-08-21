@@ -5,6 +5,7 @@ const serverStatic = require('serve-static');
 const fetch = require('node-fetch');
 const { captureRejectionSymbol } = require("events");
 const { resolve4 } = require("dns");
+const { Console } = require("console");
 //var Dict = require("collections");
 const app = express();
 
@@ -55,6 +56,8 @@ app.get("/search?*", (req,res) =>{
     const querystring=require('querystring');
     const baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&';
 
+    
+    //get query string parameters.
     const qparms = urlIn.parse(req.url,true).query;
     var qs = "";
     for(var key in qparms)
@@ -62,14 +65,24 @@ app.get("/search?*", (req,res) =>{
     const q = {qs};
     const url = baseUrl+encodeURI(qs);
     console.log(url);
-
+// 
     const p = fetch(url)
         .then(values=>JSONTransform(values))
-        .then(values=>getShoeSearchMap(values));
+        .then(values=>getShoeSearchMap(values))
+        .catch(error=>{
+            console.log(error);
+            res.send("Fatal Error");
+        });
   
     Promise.all([p]) 
         .then(values =>doMap(values))
-        .then(values =>res.send(values));
+        .then(values =>res.send(values))
+        .catch(error=>{
+            console.log(error);
+            res.send("Fatal Error");
+        });
+  
+  
 
 });
 
@@ -113,6 +126,7 @@ function getShoeSearchMap(data){
             };
         };
         resolve(dataSet)});
+        
     return(p);    
 };
 
