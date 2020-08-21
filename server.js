@@ -153,7 +153,7 @@ function getTemplate(filename){
     var fs = require('fs');
     //const { RSA_NO_PADDING } = require("constants");
     //var suiHTML ="";
-    return(fs.readFileSync(".\\public\\" + filename, 'utf8'));
+    return(fs.readFileSync(filename, 'utf8'));
         //console.log(suiHTML);    
     
 }
