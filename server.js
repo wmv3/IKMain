@@ -14,7 +14,8 @@ const app = express();
 //access to server static files.
 // use the express-static middleware
 app.use(express.static("public"));
-app.use(serverStatic('public',{ 'search': ['search.html', 'search.htm'] }))
+//app.use(express.static(path.join(__dirname,"public")));
+//app.use(serverStatic('public',{ 'search': ['search.html', 'search.htm'] }))
 
 class globalvars {
     stack = new Array();
