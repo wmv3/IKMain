@@ -15,15 +15,17 @@ const app = express();
 // use the express-static middleware
 app.use(express.static("public"));
 //app.use(express.static(path.join(__dirname,"public")));
-//app.use(serverStatic('public',{ 'search': ['search.html', 'search.htm'] }))
+app.use(serverStatic('public',{ 'search': ['search.html', 'search.htm'] }))
 
 class globalvars {
     stack = new Array();
     htmlTemplate = new String();
+    landingPage = new String();
 };
 //set global variables
 const gv = new globalvars();
 gv.htmlTemplate = getTemplate("search.html");
+gv.landingPage = getTemplate("index.html")
 var temp = '';
 
 //ROOT route ***************************************************************************************************/
@@ -32,7 +34,9 @@ app.get("/", function (req, res) {
     var tstr = 'Hello World'
     var tv = {"name" : "walt","address":"71 Woodhenge Drive"};
 
-    const p = fetch(url)
+    res.send(gv.landingPage);
+
+/*    const p = fetch(url)
         .then(values=>JSONTransform(values))
         .then(values=>getShoeSearchMap(values));
               
@@ -46,7 +50,7 @@ app.get("/", function (req, res) {
    // var temp = gv.stack.pop();
     
     //res.send(p.response);
-		
+	*/	
 });
 
 // SEARCH route   **********************************************************************************************/
