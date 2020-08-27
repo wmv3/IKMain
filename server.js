@@ -326,6 +326,6 @@ function fillSearchPage(jsonData){
             //console.log(i);
         };
     };
-    console.log(html);
+    //console.log(html);
     return(html);
 }

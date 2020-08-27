@@ -37,10 +37,10 @@ OPTIONS Access-Control-Allow-Origin: *>
 
 	function getThumbnail(name){
     	
-    	if(name != ""){
-    		return name;
+    	if(name == "" || name == null){
+    		return "img/products/shoes/NoImage.jpg";
 		} else {
-			return "img/products/shoes/NoImage.jpg";
+			return name;
 		};
 	};
 
@@ -65,7 +65,8 @@ OPTIONS Access-Control-Allow-Origin: *>
 	};
 	
 	function getShoeSearch(parm){
-		var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&releaseYear=gte:2018&name='+parm
+		//var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&releaseYear=gte:2018&name='+parm
+		var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&name='+parm
 		var request = new XMLHttpRequest();
 		console.log(url);   
 		request.open('GET', url, true);
@@ -174,7 +175,18 @@ OPTIONS Access-Control-Allow-Origin: *>
 		//alert(window.location.href);
 	};
 	var sdata;
-	//document.addEventListener("DOMContentLoaded", getSearch);
+   //Event listeners 
+
+   function addEventlisteners(){
+   		const tbNode = document.getElementById("stext");
+   		tbNode.addEventListener('keydown', (e) => {
+    		if (e.key === 'Enter') {
+				console.log("ENTER");
+        		RedirectWithSubmit();
+    		}
+		});
+   };	
+	document.addEventListener("DOMContentLoaded", addEventlisteners);
 
 
 // helper functions    *************************************************
@@ -710,7 +722,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-1" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-1" src="{img-grid-1}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-1" src="{img-grid-1}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -736,7 +748,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-2" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-2" src="{img-grid-2}" data-src="" alt="No image available">
+										<img class="img-fluid lazy" name="img-grid-2" src="{img-grid-2}" data-src="" alt="No image available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -762,7 +774,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-3" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-3" src="{img-grid-3}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-3" src="{img-grid-3}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -788,7 +800,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-4" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-4" src="{img-grid-4}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-4" src="{img-grid-4}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -814,7 +826,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-5" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-5" src="{img-grid-5}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-5" src="{img-grid-5}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -840,7 +852,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-6" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-6" src="{img-grid-6}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-6" src="{img-grid-6}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -866,7 +878,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-7" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-7" src="{img-grid-7}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-7" src="{img-grid-7}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -892,7 +904,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-8" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-8" src="{img-grid-8}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-8" src="{img-grid-8}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
@@ -918,7 +930,7 @@ function forceStringReturn(element){
 								<span class="ribbon off" hidden=true>-30%</span>
 								<figure>
 									<a name="href-grid-9" href="product-detail-1.html">
-										<img class="img-fluid lazy" name="img-grid-9" src="{img-grid-9}" data-src="" alt="No Image Available">
+										<img class="img-fluid lazy" name="img-grid-9" src="{img-grid-9}" data-src="" alt="No Image Available" onerror="this.onerror=null;this.src='/img/products/shoes/noImage.jpg';" >
 									</a>
 									<div data-countdown="2019/05/15" class="countdown" hidden=true></div>
 								</figure>
