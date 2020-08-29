@@ -1,0 +1,183 @@
+/*  old one - 8/27/2020  from server.js
+app.get("/search?*", (req,res) =>{
+    
+    //const http =require('http');
+    const urlIn=require('url');
+    const querystring=require('querystring');
+    const baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&';
+
+    
+    //get query string parameters.
+    const qparms = urlIn.parse(req.url,true).query;
+    var qs = "";
+    for(var key in qparms)
+        qs += key.toString()+"="+qparms[key];
+    const q = {qs};
+    const url = baseUrl+encodeURI(qs);
+    console.log(url);
+// 
+    const p = fetch(url)
+        .then(values=>JSONTransform(values))
+        .then(values=>getShoeSearchMap(values))
+        .catch(error=>{
+            console.log(error);
+            res.send("Fatal Error");
+        });
+  
+    Promise.all([p]) 
+        .then(values =>doMap(values))
+        .then(values =>res.send(values))
+        .catch(error=>{
+            console.log(error);
+            res.send("Fatal Error");
+        });
+});
+*/
+
+// this is old code that uses promises.  
+
+ //console.log(resp.data);
+   //      var p = fetch(baseUrl)
+       //  .then(data = resnse.json())    //(returnValues => AllinOne(returnValues))
+     //   .then(JSONTransform)
+       // .then(getShoeSearchMap)
+       // .then(values=>{res.send(values)})
+       // .catch(error=>{console.log(error);
+       //     res.send("Fatal Error");})
+    
+     //  .then(data=>res.send(data));         
+    
+     /*
+    Promise.all([p]) 
+        //.then(values =>doMap(values))
+        // just sending back dictionary to do mapping.
+        .then(values =>res.json(values) )
+        .catch(error=>{
+            console.log(error);
+            res.status(404).res.send("Fatal Error");
+        });
+  
+  */
+
+  /*   again some promise code - not sure how good this is.
+function JSONTransform(data){
+    var p = new Promise((resolve,reject) => {
+        resolve(data=>{return(JSON.parse(data[1]))});
+        reject(error=>{
+               console.log("Error in Transform");
+                return(error)})
+    });           
+    return(p);
+}
+*/
+// not used -- prb throw away.
+function AllinOne(data){
+    var jdata =  JSON.parse(data);
+    var sneaker;
+    var dataSet = {};
+    sneakers = data.results;
+    for(var i=1;i<=9;i++){
+        if(i<=sneakers.length){
+            sneaker = sneakers[i-1];
+            //console.log(sneaker.title);
+            //preloadImage(sneaker.media.thumbUrl,console.log('Image loaded'));
+            //document.getElementsByName("grid-"+i.toString())[0].hidden = false;
+            dataSet["img-grid-"+i.toString()] = sneaker.media.thumbUrl;
+            dataSet["desc-grid-"+i.toString()] = sneaker.title;
+            dataSet["rprice-grid-"+i.toString()] = "$" + sneaker.retailPrice;
+            dataSet["href-grid-"+i.toString()]= "buysell.html?sneaker="+sneaker.id;
+            dataSet["href-grid-"+i.toString()] = "buysell.html?sneaker="+sneaker.id;
+            //console.log(i);
+        }else{
+            dataSet["img-grid-"+i.toString()] = "img/products/shoes/NoImage.jpg";
+            dataSet["desc-grid-"+i.toString()]= "";
+            dataSet["rprice-grid-"+i.toString()] ="";
+            dataSet["href-grid-"+i.toString()]= "";
+            dataSet["href-grid-"+i.toString()]="";
+            //console.log(i);
+        };
+    };
+    this.res.send(dataSet);
+}
+//not much here
+function doMap(data){
+    var html = gv.htmlTemplate;
+    var tstr = "";
+	for(var key in data[0]) { 
+			    html = rp(html,"{"+key.toString()+"}",data[0][key].toString());
+    }
+    return(html);
+}; 
+
+8/28/2020 From search.html -- set to browser in root directory 
+
+function getSearch() {
+		//var formText = document.forms['sform'].elements['stext'].value;
+		getShoeSearch(getQueryString("name",""));
+		//alert('the parm is: ' + getQueryString("sparm",""));
+		//alert(window.location.href);
+	};
+
+function getShoeSearch(parm){
+		//var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&releaseYear=gte:2018&name='+parm
+		var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&name='+parm
+		var request = new XMLHttpRequest();
+		console.log(url);   
+		request.open('GET', url, true);
+		//request.setRequestHeader("Content-Type", "application/json"); 
+		request.onload = function () {
+			// Begin accessing JSON data here
+  			sdata = JSON.parse(this.response);
+  			if (request.status >= 200 && request.status < 400) { 
+				console.log('Got data');
+				var sneaker;
+				for(i=1;i<=9;i++){
+					if(i<=sdata.count){
+						 sneaker = sdata.results[i-1];
+						//preloadImage(sneaker.media.thumbUrl,console.log('Image loaded'));
+						//document.getElementsByName("grid-"+i.toString())[0].hidden = false;
+						document.getElementsByName("img-grid-"+i.toString())[0].src = getThumbnail(sneaker.media.thumbUrl);
+						document.getElementsByName("desc-grid-"+i.toString())[0].innerText = sneaker.title;
+						document.getElementsByName("rprice-grid-"+i.toString())[0].innerText ="Retail Price: $" + sneaker.retailPrice;
+						document.getElementsByName("href-grid-"+i.toString())[0].href ="buysell.html?sneaker="+sneaker.id;
+						document.getElementsByName("href-grid-"+i.toString())[1].href ="buysell.html?sneaker="+sneaker.id;
+						console.log(i);
+					}else{
+						document.getElementsByName("grid-"+i.toString())[0].hidden = true;
+					};
+				};
+				} else {
+    		console.log(`Gah, it's not working!`);
+			};
+		};
+		request.send();
+		console.log('here at send');
+		
+	};
+
+    //scraps ---
+    	/*
+		console.log(url);   
+		request.open('GET', url, true);
+		request.setRequestHeader("Content-Type", "application/json"); 
+		request.onloadend = function () {
+			// Begin accessing JSON data here
+			  //var data = this.response; 
+			console.log(request.response);
+			//if(request.status!=200)return;
+			//var  sdata = JSON.parse(this.response);
+  			if (request.readyState == 4 && request.status==200 ) { 
+				const dataSet = new dictionary();
+				dataSet = data[0];
+				var node = new Object();
+				for (var key in dataSet){
+					node = document.getElementsByName(key.toString())
+					node.innerText = dataSet[key];
+				}
+			} else {
+    		console.log(`Gah, it's not working!`);
+			};
+		};
+		//request.send();
+		//console.log('here at send');
+		*/

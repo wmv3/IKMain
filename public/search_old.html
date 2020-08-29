@@ -8,11 +8,11 @@ OPTIONS Access-Control-Allow-Origin: *>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <meta name="author" content="Investikickz LLC">
+    <meta name="author" content="Ansonika">
     <title>Investakickz | Always New, Always Anthenic</title>
 
     <!-- Favicons-->
-    <link rel="shortcut icon" href="img/favicon.ico" >  <!--type="image/x-icon"> -->
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"> 
     <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="img/apple-touch-icon-114x114-precomposed.png">
@@ -32,84 +32,10 @@ OPTIONS Access-Control-Allow-Origin: *>
 	<link href="css/custom.css" rel="stylesheet">
 	
 </head>
-<!-- must include this to use axios  -->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
-	
-	function updateSearch(){
-		var url = 'http://localhost:3000/api-searchdata'         // + document.forms['sform'].elements['stext'].value;
-		//var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&releaseYear=gte:2018'
-		//var request = new XMLHttpRequest();
-		
-		//build parms for call 
-		const config = {};
-		map = {
-		// document element by id : parameter name  returns array of  parm_name : value of element
-		//  element_id : param_id   --> returns param_id : value found on page.
-			"stext" : "name",
-			"pageid" : "page"
-		};
-		// this retrieves the search criteria from the page 
-		config.params = mapFromPage(map);
-			
-		//Execute get 
-		axios.get(url,config)
-			.then(response => {
-					console.log(response);
-					//alert('done');
-					mapElements(response.data)
-				})
-			.catch(error => {
-				console.log(error)
-			});
-	};
-	function mapElements(jsonData){
-		var node = [];
-		for (var key in jsonData){
-			if(key.includes('img')){
-				document.getElementsByName(key.toString())[0].src = getThumbnail(jsonData[key]);
-			}
-			if(key.includes('href')){
-				document.getElementsByName(key.toString())[0].href = getThumbnail(jsonData[key]);
-			}
-			else{
-				document.getElementsByName(key.toString())[0].innerHTML = jsonData[key];
-				//node.innerText = jsonData[key];
-			}
-		};
-	};
 
-	function mapFromPage(maps){
-		var jstr;
-		var str = new String();
-		var cstr = new String();
-		var first = true;
-		for(x in maps){
-			strProp = x;
-			str = forceStringReturn(document.getElementById(strProp));
-			if(str != ''){
-				if(first){
-					first = false;
-					jstr = '"'+  maps[x].toString() +'"'+ ':' +'"'+ str.toString() +'"' ;
-				}else{
-					cstr = ",";
-					jstr += cstr +'"'+  maps[x].toString() +'"' + ':' +'"'+ str.toString() +'"' ;
-				}
-			}
-		};
-		if(jstr == null || jstr == '')
-			return {};
-		jstr = '{' +jstr + '}';
-		p = JSON.parse(jstr) ;
-		return p;
-	}
-// helper functions    *************************************************	
-function forceStringReturn(element){
-    if(element == null)
-        return '';
-	else return element.value.toString();
-}
-function getThumbnail(name){
+	function getThumbnail(name){
     	
     	if(name == "" || name == null){
     		return "img/products/shoes/NoImage.jpg";
@@ -137,10 +63,121 @@ function getThumbnail(name){
 		window.location = "search?name=" + qstr3;
 		return false;
 	};
+	
+	function getShoeSearch(parm){
+		//var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&releaseYear=gte:2018&name='+parm
+		var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&name='+parm
+		var request = new XMLHttpRequest();
+		console.log(url);   
+		request.open('GET', url, true);
+		//request.setRequestHeader("Content-Type", "application/json"); 
+		request.onload = function () {
+			// Begin accessing JSON data here
+  			sdata = JSON.parse(this.response);
+  			if (request.status >= 200 && request.status < 400) { 
+				console.log('Got data');
+				var sneaker;
+				for(i=1;i<=9;i++){
+					if(i<=sdata.count){
+						 sneaker = sdata.results[i-1];
+						//preloadImage(sneaker.media.thumbUrl,console.log('Image loaded'));
+						//document.getElementsByName("grid-"+i.toString())[0].hidden = false;
+						document.getElementsByName("img-grid-"+i.toString())[0].src = getThumbnail(sneaker.media.thumbUrl);
+						document.getElementsByName("desc-grid-"+i.toString())[0].innerText = sneaker.title;
+						document.getElementsByName("rprice-grid-"+i.toString())[0].innerText ="Retail Price: $" + sneaker.retailPrice;
+						document.getElementsByName("href-grid-"+i.toString())[0].href ="buysell.html?sneaker="+sneaker.id;
+						document.getElementsByName("href-grid-"+i.toString())[1].href ="buysell.html?sneaker="+sneaker.id;
+						console.log(i);
+					}else{
+						document.getElementsByName("grid-"+i.toString())[0].hidden = true;
+					};
+				};
+				} else {
+    		console.log(`Gah, it's not working!`);
+			};
+		};
+		request.send();
+		console.log('here at send');
+		
+	};
+	function updateSearch(){
+		var url = 'http://localhost:3000/api-searchdata'         // + document.forms['sform'].elements['stext'].value;
+		//var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=20&releaseYear=gte:2018'
+		//var request = new XMLHttpRequest();
+		
+		//build parms for call 
+		const config = {};
+		map = {
+		// document element by id : parameter name  returns array of  parm_name : value of element
+		//  element_id : param_id   --> returns param_id : value found on page.
+			"stext" : "name",
+			"pageid" : "page"
+		};
+		// this retrieves the search criteria from the page 
+		config.params = mapFromPage(map);
+			
+		//Execute get 
+		axios.get(url,config)
+			.then(response => {
+					console.log(response);
+					//alert('done');
+					mapElements(response.data)
+				})
+			.catch(error => {
+				console.log(error)
+			});
+	
+		/*
+		console.log(url);   
+		request.open('GET', url, true);
+		request.setRequestHeader("Content-Type", "application/json"); 
+		request.onloadend = function () {
+			// Begin accessing JSON data here
+			  //var data = this.response; 
+			console.log(request.response);
+			//if(request.status!=200)return;
+			//var  sdata = JSON.parse(this.response);
+  			if (request.readyState == 4 && request.status==200 ) { 
+				const dataSet = new dictionary();
+				dataSet = data[0];
+				var node = new Object();
+				for (var key in dataSet){
+					node = document.getElementsByName(key.toString())
+					node.innerText = dataSet[key];
+				}
+			} else {
+    		console.log(`Gah, it's not working!`);
+			};
+		};
+		//request.send();
+		//console.log('here at send');
+		*/
+	};
+	function mapElements(jsonData){
+		var node = [];
+		for (var key in jsonData){
+			if(key.includes('img')){
+				document.getElementsByName(key.toString())[0].src = getThumbnail(jsonData[key]);
+			}
+			if(key.includes('href')){
+				document.getElementsByName(key.toString())[0].href = getThumbnail(jsonData[key]);
+			}
+			else{
+				document.getElementsByName(key.toString())[0].innerHTML = jsonData[key];
+				//node.innerText = jsonData[key];
+			}
+		};
+	};
+	function getSearch() {
+		//var formText = document.forms['sform'].elements['stext'].value;
+		getShoeSearch(getQueryString("name",""));
+		//alert('the parm is: ' + getQueryString("sparm",""));
+		//alert(window.location.href);
+	};
+	var sdata;
+   //Event listeners 
 
-//Event listeners 
-
-function addEventlisteners(){
+   function addEventlisteners(){
    		const tbNode = document.getElementById("stext");
    		tbNode.addEventListener('keydown', (e) => {
     		if (e.key === 'Enter') {
@@ -150,6 +187,40 @@ function addEventlisteners(){
 		});
    };	
 	document.addEventListener("DOMContentLoaded", addEventlisteners);
+
+
+// helper functions    *************************************************
+
+function mapFromPage(maps){
+	var jstr;
+	var str = new String();
+	var cstr = new String();
+	var first = true;
+	for(x in maps){
+		strProp = x;
+		str = forceStringReturn(document.getElementById(strProp));
+		if(str != ''){
+			if(first){
+				first = false;
+				jstr = '"'+  maps[x].toString() +'"'+ ':' +'"'+ str.toString() +'"' ;
+			}else{
+				cstr = ",";
+				jstr += cstr +'"'+  maps[x].toString() +'"' + ':' +'"'+ str.toString() +'"' ;
+			}
+		}
+	};
+	if(jstr == null || jstr == '')
+		return {};
+	jstr = '{' +jstr + '}';
+	p = JSON.parse(jstr) ;
+	return p;
+}
+	
+function forceStringReturn(element){
+    if(element == null)
+        return '';
+    else return element.value.toString();
+}
 //*********************************** END SCRIPTS *****************************/
 </script>
 <body>

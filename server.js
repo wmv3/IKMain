@@ -2,7 +2,7 @@
 const express = require("express")
 const path = require('path')
 const serverStatic = require('serve-static');
-const fetch = require('node-fetch');
+//const fetch = require('node-fetch');
 const axios = require('axios').default;
 const { captureRejectionSymbol } = require("events");
 const { resolve4 } = require("dns");
@@ -43,67 +43,18 @@ app.get("/", function (req, res) {
 
     res.send(gv.landingPage);
 
-/*    const p = fetch(url)
-        .then(values=>JSONTransform(values))
-        .then(values=>getShoeSearchMap(values));
-              
-
-
-    Promise.all([p])
-        .then(values =>doMap(values))
-        .then(values =>res.send(values));
-
-    //gv.stack.push(tstr);
-   // var temp = gv.stack.pop();
-    
-    //res.send(p.response);
-	*/	
 });
 
 // SEARCH route   **********************************************************************************************/
-/*  old one - 8/27/2020
-app.get("/search?*", (req,res) =>{
-    
-    //const http =require('http');
-    const urlIn=require('url');
-    const querystring=require('querystring');
-    const baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&';
 
-    
-    //get query string parameters.
-    const qparms = urlIn.parse(req.url,true).query;
-    var qs = "";
-    for(var key in qparms)
-        qs += key.toString()+"="+qparms[key];
-    const q = {qs};
-    const url = baseUrl+encodeURI(qs);
-    console.log(url);
-// 
-    const p = fetch(url)
-        .then(values=>JSONTransform(values))
-        .then(values=>getShoeSearchMap(values))
-        .catch(error=>{
-            console.log(error);
-            res.send("Fatal Error");
-        });
-  
-    Promise.all([p]) 
-        .then(values =>doMap(values))
-        .then(values =>res.send(values))
-        .catch(error=>{
-            console.log(error);
-            res.send("Fatal Error");
-        });
-});
-*/
 app.get("/search?*", (req,res) =>{
     
     const baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&';
     console.log(req.query);
     var inputParms = req.query;
     //need to validate the these parameters
-   var qs = baseUrl + jsonToQueryString(req.query);
-    axios.get(qs)
+   var searchQuery = baseUrl + jsonToQueryString(req.query);
+    axios.get(searchQuery)
         .then(data=>{res.status=200;
                      const htmlOut =fillSearchPage(data);
                      res.send(htmlOut)
@@ -111,33 +62,16 @@ app.get("/search?*", (req,res) =>{
 });
 
 // route for api for search data - mapping done client side with this function. 
+// this returns a map of data from the sneaker database to name tags of the html - js-clientside will use to replace the data.
+// html uses name=tag  data = {tag}, so find tag and replace {tag} with the db data.
 app.get("/api-searchdata", function (req,res){
-/** GET /api-status - Check service status **/
-//router.get('api-searchdata', (req, res) =>{
-//  res.json({
-//    status: "ok"
-//  })
-//);
-    
-    //const http =require('http');
-   // const urlIn=require('url');
-    //const querystring=require('querystring');
+
     //var baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&name=nike';
     var baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers'
 
- /*   
-    //get query string parameters.
-    const qparms = urlIn.parse(req.url,true).query;
-    var qs = "";
-    for(var key in qparms)
-        qs += key.toString()+"="+qparms[key];
-    const q = {qs};
-    const url = baseUrl+encodeURI(qs);
-    console.log(url);
-*/
-    console.log(req.query);
+     //console.log(req.query);
     var inputParms = req.query;
-    //need to validate the these parameters
+    //need to validate the these parameters looking for injection
    var qs = baseUrl+"?limit=10&releaseYear=gte:2018&" + jsonToQueryString(req.query);
     axios.get(qs)
         .then(getSearchPageMap)
@@ -145,29 +79,7 @@ app.get("/api-searchdata", function (req,res){
             res.header = "Content-Type", "application/json";
             res.send(data);res.end()});
 
-    //console.log(resp.data);
-   //      var p = fetch(baseUrl)
-       //  .then(data = resnse.json())    //(returnValues => AllinOne(returnValues))
-     //   .then(JSONTransform)
-       // .then(getShoeSearchMap)
-       // .then(values=>{res.send(values)})
-       // .catch(error=>{console.log(error);
-       //     res.send("Fatal Error");})
-    
-     //  .then(data=>res.send(data));         
-    
-     /*
-    Promise.all([p]) 
-        //.then(values =>doMap(values))
-        // just sending back dictionary to do mapping.
-        .then(values =>res.json(values) )
-        .catch(error=>{
-            console.log(error);
-            res.status(404).res.send("Fatal Error");
-        });
-  
-  */
-
+   
 });
 
 
@@ -180,15 +92,15 @@ app.listen(process.env.PORT || 3000,
 
 //function to map search results page.
 //todo: should take the mapping as parm. So html tags : data ie -- img-grid-x : data for call
+// takes full json from sneakerdatabase and maps sneaker db data to HtML tag:  - These tags are in the html file.
+// The HTML follows:  name="img-grid-1" src="{img-grid-1}" So this maps to the name.
+// in the HTML there is a function that then takes this map and does the data replacement.
 function getSearchPageMap(data){
-	console.log('Got data');
+	//console.log('Got data');
     var first = true;
     var sneakers = data.data.results;
     var i = 1;
     var dataSet = {};
-	/*var str = new String();
-	var cstr = new String();
-	var first = true;  */
 	for(sneaker in sneakers){
         if(i<=9){ 
             if(i<=sneakers.length){
@@ -212,17 +124,39 @@ function getSearchPageMap(data){
             };
         i++};
     };
-    console.log(dataSet);
+    //console.log(dataSet);
     return(dataSet);
 };
-function doMap(data){
+// this is serverside html build of search page. This is used coming from the landing page (index.html) search to the searchpage.
+//  the initial search page is populated from the landing page search returned populated.
+function fillSearchPage(jsonData){
+    var sneaker;
     var html = gv.htmlTemplate;
-    var tstr = "";
-	for(var key in data[0]) { 
-			    html = rp(html,"{"+key.toString()+"}",data[0][key].toString());
-    }
+    sneakers = jsonData.data.results;
+    for(var i=1;i<=9;i++){
+        if(i<=sneakers.length){
+            sneaker = sneakers[i-1];
+            //console.log(sneaker.title);
+            //preloadImage(sneaker.media.thumbUrl,console.log('Image loaded'));
+            //document.getElementsByName("grid-"+i.toString())[0].hidden = false;
+            html = rp(html,"{" +"img-grid-"+i.toString() +"}", sneaker.media.thumbUrl);
+            html = rp(html,"{" +"desc-grid-"+i.toString()+"}", sneaker.title);
+            html = rp(html,"{" +"rprice-grid-"+i.toString()+"}", "$" + sneaker.retailPrice);
+            html = rp(html,"{" +"href-grid-"+i.toString()+"}", "buysell.html?sneaker="+sneaker.id);
+            html = rp(html,"{" +"href-grid-"+i.toString()+"}", "buysell.html?sneaker="+sneaker.id);
+            //console.log(i);
+        }else{
+            html = rp(html,"{" +"img-grid-"+i.toString()+"}","img/products/shoes/NoImage.jpg");
+            html = rp(html,"{" +"desc-grid-"+i.toString()+"}", "");
+            html = rp(html,"{" +"rprice-grid-"+i.toString()+"}","");
+            html = rp(html,"{" +"href-grid-"+i.toString()+"}", "");
+            html = rp(html,"{" +"href-grid-"+i.toString()+"}","");
+            //console.log(i);
+        };
+    };
+    //console.log(html);
     return(html);
-};    
+}
 
 //********************************************************************************************* */
 //helper functions
@@ -262,70 +196,7 @@ function getThumbnail(name){
         return "img/products/shoes/NoImage.jpg";
     };
 };
-/*
-function JSONTransform(data){
-    var p = new Promise((resolve,reject) => {
-        resolve(data=>{return(JSON.parse(data[1]))});
-        reject(error=>{
-               console.log("Error in Transform");
-                return(error)})
-    });           
-    return(p);
-}
-*/
-function AllinOne(data){
-    var jdata =  JSON.parse(data);
-    var sneaker;
-    var dataSet = {};
-    sneakers = data.results;
-    for(var i=1;i<=9;i++){
-        if(i<=sneakers.length){
-            sneaker = sneakers[i-1];
-            //console.log(sneaker.title);
-            //preloadImage(sneaker.media.thumbUrl,console.log('Image loaded'));
-            //document.getElementsByName("grid-"+i.toString())[0].hidden = false;
-            dataSet["img-grid-"+i.toString()] = sneaker.media.thumbUrl;
-            dataSet["desc-grid-"+i.toString()] = sneaker.title;
-            dataSet["rprice-grid-"+i.toString()] = "$" + sneaker.retailPrice;
-            dataSet["href-grid-"+i.toString()]= "buysell.html?sneaker="+sneaker.id;
-            dataSet["href-grid-"+i.toString()] = "buysell.html?sneaker="+sneaker.id;
-            //console.log(i);
-        }else{
-            dataSet["img-grid-"+i.toString()] = "img/products/shoes/NoImage.jpg";
-            dataSet["desc-grid-"+i.toString()]= "";
-            dataSet["rprice-grid-"+i.toString()] ="";
-            dataSet["href-grid-"+i.toString()]= "";
-            dataSet["href-grid-"+i.toString()]="";
-            //console.log(i);
-        };
-    };
-    this.res.send(dataSet);
-}
-function fillSearchPage(jsonData){
-    var sneaker;
-    var html = gv.htmlTemplate;
-    sneakers = jsonData.data.results;
-    for(var i=1;i<=9;i++){
-        if(i<=sneakers.length){
-            sneaker = sneakers[i-1];
-            //console.log(sneaker.title);
-            //preloadImage(sneaker.media.thumbUrl,console.log('Image loaded'));
-            //document.getElementsByName("grid-"+i.toString())[0].hidden = false;
-            html = rp(html,"{" +"img-grid-"+i.toString() +"}", sneaker.media.thumbUrl);
-            html = rp(html,"{" +"desc-grid-"+i.toString()+"}", sneaker.title);
-            html = rp(html,"{" +"rprice-grid-"+i.toString()+"}", "$" + sneaker.retailPrice);
-            html = rp(html,"{" +"href-grid-"+i.toString()+"}", "buysell.html?sneaker="+sneaker.id);
-            html = rp(html,"{" +"href-grid-"+i.toString()+"}", "buysell.html?sneaker="+sneaker.id);
-            //console.log(i);
-        }else{
-            html = rp(html,"{" +"img-grid-"+i.toString()+"}","img/products/shoes/NoImage.jpg");
-            html = rp(html,"{" +"desc-grid-"+i.toString()+"}", "");
-            html = rp(html,"{" +"rprice-grid-"+i.toString()+"}","");
-            html = rp(html,"{" +"href-grid-"+i.toString()+"}", "");
-            html = rp(html,"{" +"href-grid-"+i.toString()+"}","");
-            //console.log(i);
-        };
-    };
-    //console.log(html);
-    return(html);
-}
+
+//END of helper functions.
+
+
