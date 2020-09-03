@@ -40,7 +40,7 @@ app.get("/", function (req, res) {
 	var url = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&name=jordan';
     var tstr = 'Hello World'
     var tv = {"name" : "walt","address":"71 Woodhenge Drive"};
-
+    console.log("testing dev branch")
     res.send(gv.landingPage);
 
 });
