@@ -4,12 +4,14 @@ const path = require('path')
 const serverStatic = require('serve-static');
 //const fetch = require('node-fetch');
 const axios = require('axios').default;
+const { Client } = require('pg');
 const { captureRejectionSymbol } = require("events");
 const { resolve4 } = require("dns");
 const { Console } = require("console");
 //var Dict = require("collections");
 // this is very import to include - making http request possible.
 const cors = require('cors');
+const { resolve } = require("path");
 
 const app = express();
 //const router = express.Router();
@@ -44,7 +46,94 @@ app.get("/", function (req, res) {
     res.send(gv.landingPage);
 
 });
+// Test route **************************************************************************************************/
+//  9/5/2020 -- testing Heroku db connection 
+//  REMOVE WHEN DONE 
+app.get("/test",function(req,res) {
+   
+    const client = new Client({
+    host: process.env.PGHOST,
+    port: process.env.PBPORT || 5432,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    ssl: {rejectUnauthorized: false}
+    });
+    var obj ;
+    const query = {
+        name: 'getuser',
+        text: 'select * from getuser($1);',
+        values: ['Archie']
+      }
+      
+    client.connect()
+    client.query(query)
+          .then(result=>{
+                 for (let row of result.rows) {
+                    // console.log(JSON.stringify(row));
+                    //obj=JSON.stringify(row)
+                    obj = row.getuser;
+                 }
+            })
+            .catch(err =>console.error('DB execution error', err.stack))
+    .then(()=>{console.log("connection closed");
+        res.send(JSON.stringify(obj))
+        client.end()});
+    
+    //console.log(JSON.stringify(obj));
+    //client.end();
+});
 
+// TEST 2 *****************************************************************************************************/
+
+app.get("/test2",(req,res)=>{
+    const getsneakers = new Promise((resolve,reject)=>{
+        const baseUrl = 'https://api.thesneakerdatabase.com/v1/sneakers?limit=10&page=1&releaseYear=gte:2018&';
+        var inputParms = {name: 'Nike'};
+            //need to validate the these parameters
+        var searchQuery = baseUrl + jsonToQueryString(inputParms);
+            axios.get(searchQuery)
+            .then(data=>{return(resolve({'sneakers' : data.data.results}))});
+    });
+    const getuser = new Promise((resolve,reject)=>{
+        const client = new Client({
+        host: process.env.PGHOST,
+        port: process.env.PBPORT || 5432,
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        ssl: {rejectUnauthorized: false}
+        });
+        var obj ;
+        const query = {
+            name: 'getuser',
+            text: 'select * from getuser($1);',
+            values: ['Archie']
+          }
+          
+        client.connect()
+        client.query(query)
+              .then(result=>{
+                     for (let row of result.rows) {
+                        // console.log(JSON.stringify(row));
+                        //obj=JSON.stringify(row)
+                        obj = row.getuser;
+                     }
+                })
+                .catch(err =>console.error('DB execution error', err.stack))
+        .then(()=>{console.log("connection closed");
+            client.end();
+            return(resolve({'user' : obj}));
+        });
+    });
+//testing to api calls together -  return the combined set.
+// The two functions return promises 
+      
+    Promise.all([getuser,getsneakers])
+    .then(data=>{res.status=200;
+        res.send(data)
+        res.end()})
+    .catch(e=>console.log(e));
+        
+});
 // SEARCH route   **********************************************************************************************/
 
 app.get("/search?*", (req,res) =>{
