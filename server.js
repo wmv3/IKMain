@@ -129,7 +129,7 @@ app.get("/test2",(req,res)=>{
       
     Promise.all([getuser,getsneakers])
     .then(data=>{res.status=200;
-        res.send(data)
+        res.send(data);
         res.end()})
     .catch(e=>console.log(e));
         

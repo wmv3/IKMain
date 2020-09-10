@@ -11,3 +11,10 @@ CREATE TABLE users (
     date_of_birth DATE          ,
     phone  VARCHAR(10) 
 );
+
+//example not used in database
+CREATE FUNCTION find_val(val text) 
+RETURNS json AS
+$$
+SELECT row_to_json(sample) FROM sample where $1 = ANY(col4);
+$$ LANGUAGE sql;
