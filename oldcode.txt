@@ -181,3 +181,19 @@ function getShoeSearch(parm){
 		//request.send();
 		//console.log('here at send');
 		*/
+
+//postgres code try - wasn't working
+          client.connect()
+    //.then(() => console.log('connected'))
+    //.catch(err => console.error('connection error', err.stack));
+    client.query(query, (err, res) => {
+        if (err) throw err;
+        for (let row of res.rows) {
+           // console.log(JSON.stringify(row));
+           //obj=JSON.stringify(row)
+           obj = row.getuser;
+        }
+        client.end();
+ //       const p = new Promise((resolve,reject) => 
+ //           {return obj});
+ //       return p;
