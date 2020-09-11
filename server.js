@@ -97,7 +97,7 @@ app.get("/test2",(req,res)=>{
     const getuser = new Promise((resolve,reject)=>{
         const client = new Client({
         host: process.env.PGHOST,
-        port: process.env.PBPORT || 5432,
+        port: process.env.PGPORT || 5432,
         user: process.env.PGUSER,
         password: process.env.PGPASSWORD,
         ssl: {rejectUnauthorized: false}
